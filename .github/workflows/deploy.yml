@@ -1,0 +1,68 @@
+name: Deploy Google Apps Script
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-staging:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install clasp
+        run: npm install -g @google/clasp
+
+      - name: Configure clasp credentials
+        run: |
+          mkdir -p "$HOME"
+          echo '${{ secrets.CLASP_CREDENTIALS_JSON }}' > "$HOME/.clasprc.json"
+
+      - name: Configure Script ID
+        run: echo '{"scriptId":"${{ secrets.GOOGLE_SCRIPT_ID }}"}' > .clasp.json
+
+      - name: Push latest code to staging script
+        run: clasp push --force
+
+      - name: Create staging deployment
+        run: clasp deploy --description "staging-pr-${{ github.event.pull_request.number }}-${{ github.sha }}"
+
+  deploy-production:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install clasp
+        run: npm install -g @google/clasp
+
+      - name: Configure clasp credentials
+        run: |
+          mkdir -p "$HOME"
+          echo '${{ secrets.CLASP_CREDENTIALS_JSON }}' > "$HOME/.clasprc.json"
+
+      - name: Configure Script ID
+        run: echo '{"scriptId":"${{ secrets.GOOGLE_SCRIPT_ID }}"}' > .clasp.json
+
+      - name: Push latest code to production script
+        run: clasp push --force
