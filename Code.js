@@ -73,12 +73,25 @@ function getFirstResponse_(responses, fieldNames) {
 }
 
 function buildDescription_(responses) {
-  const lines = [];
+  const rows = ["| Field | Response |", "| --- | --- |"];
   Object.keys(responses).forEach((question) => {
     const answer = responses[question] && responses[question][0]
       ? responses[question][0]
       : "";
-    lines.push(`${question}: ${answer}`);
+    rows.push(
+      `| ${escapeTableCell_(question)} | ${escapeTableCell_(answer)} |`
+    );
   });
-  return lines.join("\n");
+  return rows.join("\n");
+}
+
+function escapeTableCell_(value) {
+  if (value === null || value === undefined) {
+    return "";
+  }
+
+  return String(value)
+    .replace(/\\/g, "\\\\")
+    .replace(/\|/g, "\\|")
+    .replace(/\r?\n/g, "<br>");
 }

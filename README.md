@@ -18,3 +18,7 @@ A Google Form Add-On that securely posts Google Form responses to Trello as new 
 3. Create an installable **On form submit** trigger for `onFormSubmit`.
 
 Each sheet can use a unique list id through `TRELLO_LIST_IDS`, while reusing the same Trello API key/token.
+
+## Form fields as Trello card table
+
+Use `formatFormFieldsAsTable` to render submitted form fields into a Markdown table suitable for a Trello card description.
