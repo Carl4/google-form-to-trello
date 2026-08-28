@@ -90,9 +90,7 @@ function buildCardTitle_(responses, fallbackTitle) {
 function buildDescription_(responses) {
   const rows = [];
   Object.keys(responses).forEach((question) => {
-    const answer = responses[question] && responses[question][0]
-      ? responses[question][0]
-      : "";
+    const answer = responses[question];
     rows.push(formatFieldBlock_(question, answer));
   });
   return rows.join("\n\n");
@@ -111,6 +109,13 @@ function formatFieldBlock_(question, answer) {
 function formatFieldValue_(value) {
   if (value === null || value === undefined) {
     return "";
+  }
+
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => item === null || item === undefined ? "" : String(item).replace(/\r\n/g, "\n"))
+      .filter(Boolean)
+      .join("\n");
   }
 
   return String(value).replace(/\r\n/g, "\n");

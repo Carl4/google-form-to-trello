@@ -6,29 +6,31 @@ function normalizeFields(fields) {
   if (Array.isArray(fields)) {
     return fields
       .filter((field) => field && typeof field.name === 'string')
-      .map((field) => ({ name: field.name, value: normalizeValue(field.value) }));
+      .map((field) => ({ name: field.name, value: field.value }));
   }
 
   if (typeof fields === 'object') {
     return Object.entries(fields).map(([name, value]) => ({
       name,
-      value: normalizeValue(value),
+      value,
     }));
   }
 
   return [];
 }
 
-function normalizeValue(value) {
-  if (Array.isArray(value)) {
-    return value[0];
-  }
-  return value;
-}
-
 function formatFieldValue(value) {
   if (value === null || value === undefined) {
     return '';
+  }
+
+  if (Array.isArray(value)) {
+    return value
+      .map(function (item) {
+        return item === null || item === undefined ? '' : String(item).replace(/\r\n/g, '\n');
+      })
+      .filter(Boolean)
+      .join('\n');
   }
 
   return String(value).replace(/\r\n/g, '\n');
@@ -76,10 +78,14 @@ function getFieldValue(fields, names) {
   for (var i = 0; i < names.length; i += 1) {
     var fieldName = names[i];
     var field = fields.find(function (entry) {
-      return entry.name === fieldName && entry.value;
+      return entry.name === fieldName && formatFieldValue(entry.value);
     });
 
     if (field) {
+      if (Array.isArray(field.value)) {
+        return String(field.value[0]);
+      }
+
       return String(field.value);
     }
   }

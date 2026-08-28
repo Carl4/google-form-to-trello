@@ -48,6 +48,14 @@ test('normalizes response arrays and keeps backslashes', () => {
   assert.equal(result, ['**Path \\ name**', 'C:\\temp\\file.txt'].join('\n'));
 });
 
+test('renders all values from multi-select responses', () => {
+  const result = formatFormFieldsAsMarkdown({
+    Skills: ['JavaScript', 'Testing'],
+  });
+
+  assert.equal(result, ['**Skills**', 'JavaScript', 'Testing'].join('\n'));
+});
+
 test('retains the legacy export as an alias', () => {
   const result = formatFormFieldsAsTable([
     { name: 'Path \\ name', value: 'C:\\temp\\file.txt' },
