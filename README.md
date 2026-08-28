@@ -22,3 +22,15 @@ Each sheet can use a unique list id through `TRELLO_LIST_IDS`, while reusing the
 ## Form fields as Trello card table
 
 Use `formatFormFieldsAsTable` to render submitted form fields into a Markdown table suitable for a Trello card description.
+
+## CI/CD deployment
+
+This repository includes a GitHub Actions workflow at `.github/workflows/deploy.yml`.
+
+- Pull request commits automatically run a **staging** deployment job.
+- Pushes to `main` automatically run a **production** deployment job.
+
+### Required GitHub Actions secrets
+
+- `CLASP_CREDENTIALS_JSON`: JSON content for the `.clasprc.json` credentials file.
+- `GOOGLE_SCRIPT_ID`: The target Apps Script project ID.
