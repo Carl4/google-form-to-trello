@@ -35,6 +35,21 @@ test('escapes pipes and newlines in values', () => {
   );
 });
 
+test('escapes backslashes in names and values', () => {
+  const result = formatFormFieldsAsTable([
+    { name: 'Path \\ name', value: 'C:\\temp\\file.txt' },
+  ]);
+
+  assert.equal(
+    result,
+    [
+      '| Field | Response |',
+      '| --- | --- |',
+      '| Path \\\\ name | C:\\\\temp\\\\file.txt |',
+    ].join('\n')
+  );
+});
+
 test('returns empty string for empty input', () => {
   assert.equal(formatFormFieldsAsTable({}), '');
   assert.equal(formatFormFieldsAsTable([]), '');

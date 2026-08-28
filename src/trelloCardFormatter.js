@@ -21,7 +21,10 @@ function escapeTableCell(value) {
     return '';
   }
 
-  return String(value).replace(/\|/g, '\\|').replace(/\r?\n/g, '<br>');
+  return String(value)
+    .replace(/\\/g, '\\\\')
+    .replace(/\|/g, '\\|')
+    .replace(/\r?\n/g, '<br>');
 }
 
 function formatFormFieldsAsTable(fields) {
