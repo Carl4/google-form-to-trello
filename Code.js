@@ -10,9 +10,7 @@ function onFormSubmit(e) {
   const listId = getListIdForSheet_(props, sheetName);
 
   const responses = e.namedValues;
-  const title =
-    getFirstResponse_(responses, ["Name", "Title"]) ||
-    `New form submission (${sheetName})`;
+  const title = buildCardTitle_(responses, `New form submission (${sheetName})`);
   const description = buildDescription_(responses);
 
   UrlFetchApp.fetch("https://api.trello.com/1/cards", {
@@ -72,26 +70,48 @@ function getFirstResponse_(responses, fieldNames) {
   return "";
 }
 
+function buildCardTitle_(responses, fallbackTitle) {
+  const title = getFirstResponse_(responses, ["Title", "Name"]);
+  const yourName = getFirstResponse_(responses, ["Your Name"]);
+
+  if (yourName) {
+    if (!title) {
+      return yourName;
+    }
+
+    if (title !== yourName) {
+      return `${title} - ${yourName}`;
+    }
+  }
+
+  return title || fallbackTitle;
+}
+
 function buildDescription_(responses) {
-  const rows = ["| Field | Response |", "| --- | --- |"];
+  const rows = [];
   Object.keys(responses).forEach((question) => {
     const answer = responses[question] && responses[question][0]
       ? responses[question][0]
       : "";
-    rows.push(
-      `| ${escapeTableCell_(question)} | ${escapeTableCell_(answer)} |`
-    );
+    rows.push(formatFieldBlock_(question, answer));
   });
-  return rows.join("\n");
+  return rows.join("\n\n");
 }
 
-function escapeTableCell_(value) {
+function formatFieldBlock_(question, answer) {
+  const formattedAnswer = formatFieldValue_(answer);
+
+  if (!formattedAnswer) {
+    return `**${question}**`;
+  }
+
+  return `**${question}**\n${formattedAnswer}`;
+}
+
+function formatFieldValue_(value) {
   if (value === null || value === undefined) {
     return "";
   }
 
-  return String(value)
-    .replace(/\\/g, "\\\\")
-    .replace(/\|/g, "\\|")
-    .replace(/\r?\n/g, "<br>");
+  return String(value).replace(/\r\n/g, "\n");
 }
