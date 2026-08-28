@@ -19,6 +19,6 @@ A Google Form Add-On that securely posts Google Form responses to Trello as new 
 
 Each sheet can use a unique list id through `TRELLO_LIST_IDS`, while reusing the same Trello API key/token.
 
-## Form fields as Trello card table
+## Form fields as Trello card markdown
 
-Use `formatFormFieldsAsTable` to render submitted form fields into a Markdown table suitable for a Trello card description.
+Use `formatFormFieldsAsMarkdown` to render submitted form fields into simple Markdown blocks that Trello card descriptions display cleanly.
